@@ -1,0 +1,748 @@
+.loteriaContainer {
+  min-height: 90vh;
+  height: 90vh;
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #3B82F6 100%);
+  padding: 10px;
+  padding-bottom: 0;
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.loteriaContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Header con diseño Teletón */
+.header {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 50%;
+}
+
+.logo {
+  height: 100%;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  transition: transform 0.3s ease;
+  border-radius: 20px;
+
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.title {
+  color: #FBBF24;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+  margin: 0;
+  letter-spacing: 1.5px;
+  background: linear-gradient(45deg, #FBBF24, #F59E0B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Controles con estilo Teletón */
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.startButton,
+.resetButton {
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.startButton {
+  background: linear-gradient(45deg, #FBBF24, #F59E0B);
+  color: #1E3A8A;
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 10;
+}
+
+.startButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.6);
+  background: linear-gradient(45deg, #F59E0B, #FBBF24);
+}
+
+.resetButton {
+  background: linear-gradient(45deg, #F97316, #EA580C);
+  color: white;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 10;
+}
+
+.resetButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(249, 115, 22, 0.6);
+  background: linear-gradient(45deg, #EA580C, #F97316);
+}
+
+.gameControls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.counter {
+  color: #FBBF24;
+  font-size: 0.95rem;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #FBBF24;
+  font-weight: bold;
+  background: rgba(251, 191, 36, 0.2);
+  padding: 8px 16px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.timerBar {
+  width: 80px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.timerBar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #FBBF24, #F97316);
+  border-radius: 3px;
+  animation: timerProgress 5s linear;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+@keyframes timerProgress {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
+}
+
+/* Grid modificado para 8 cartas por fila optimizado para 329px */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px 4px;
+  justify-content: center;
+  padding: 10px 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  max-width: 100%;
+  justify-items: center;
+}
+
+.card {
+  width: 35px;
+  height: 50px;
+  background-color: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}
+
+/* Animación simple y rápida en hover */
+.card:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 18px rgba(249, 115, 22, 0.4);
+  border: 2px solid #F97316;
+  z-index: 10;
+}
+
+.cardInner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+  filter: brightness(1.1) contrast(1.05);
+}
+
+.card:hover .cardImage {
+  transform: scale(1.05);
+}
+
+.cardNumber {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(45deg, #1E3A8A, #2563EB);
+  color: #FBBF24;
+  padding: 1px 4px;
+  border-radius: 8px;
+  font-size: 0.5rem;
+  font-weight: bold;
+  min-width: 12px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.card:hover .cardNumber {
+  transform: translateX(-50%) scale(1.1);
+  background: linear-gradient(45deg, #FBBF24, #F59E0B);
+  color: #1E3A8A;
+}
+
+/* Estados de las cartas con colores Teletón */
+.cardSelected {
+  transform: scale(1.08) translateY(-3px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.5);
+  z-index: 2;
+  border: 2px solid #22C55E;
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.cardSelected .cardImage {
+  filter: brightness(1.2) contrast(1.1) saturate(1.1);
+}
+
+.cardSelected .cardNumber {
+  background: linear-gradient(45deg, #22C55E, #16A34A);
+  color: white;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+.cardPlayed {
+  filter: blur(1px) brightness(0.7);
+  transition: all 0.3s ease;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.cardDarkened {
+  filter: brightness(0.4) contrast(1.1);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.cardHighlighted {
+  transform: scale(1.15) translateY(-5px);
+  z-index: 10;
+  box-shadow: 0 10px 25px rgba(251, 191, 36, 0.8);
+  border: 3px solid #FBBF24;
+  animation: pulseTeleton 1.5s infinite;
+  background: rgba(255, 255, 255, 1);
+}
+
+.cardDimmedDuringAnimation {
+  opacity: 0.3;
+  transition: all 0.5s ease;
+}
+
+.cardClickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cardClickable:hover {
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+  background: rgba(255, 255, 255, 1);
+  border: 2px solid #3B82F6;
+}
+
+.cardOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeInOverlay 0.5s ease-in-out forwards;
+  backdrop-filter: blur(2px);
+}
+
+.checkmark {
+  color: #FBBF24;
+  font-size: 1rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+  animation: checkmarkBounce 0.6s ease-out;
+}
+
+/* Carta expandida con estilo Teletón */
+.expandedCardOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease-in-out;
+  backdrop-filter: blur(8px);
+}
+
+.expandedCard {
+  border-radius: 20px;
+  padding: 20px;
+  padding-left: 0;
+  padding-right: 0;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  max-width: 80vw;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: slideInTeleton 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(15px);
+  border: 3px solid rgba(251, 191, 36, 0.4);
+}
+
+.expandedCardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 15px;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.4);
+  filter: brightness(1.1) contrast(1.05);
+}
+
+.expandedCardTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  background: linear-gradient(45deg, #1E3A8A, #2563EB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading y Error con colores Teletón */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 20px;
+  color: #FBBF24;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(251, 191, 36, 0.3);
+  border-top: 3px solid #FBBF24;
+  border-radius: 50%;
+  animation: spinTeleton 1s linear infinite;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+}
+
+.containerFooter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0;
+  height: 80px;
+  background-color: #1E3A8A;
+  overflow-x: auto;
+}
+
+.imagenFooter {
+  max-height: 80px;
+  width: auto;
+  object-fit: contain;
+}
+
+
+@keyframes spinTeleton {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.errorMessage {
+  background: linear-gradient(45deg, rgba(249, 115, 22, 0.9), rgba(234, 88, 12, 0.9));
+  color: white;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 3px 15px rgba(249, 115, 22, 0.3);
+}
+
+/* Animaciones optimizadas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInTeleton {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(-30px) rotate(-3deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulseTeleton {
+  0% {
+    box-shadow: 0 10px 25px rgba(251, 191, 36, 0.8);
+    transform: scale(1.15) translateY(-5px);
+  }
+
+  50% {
+    box-shadow: 0 12px 30px rgba(251, 191, 36, 1), 0 0 20px rgba(249, 115, 22, 0.6);
+    transform: scale(1.2) translateY(-7px);
+  }
+
+  100% {
+    box-shadow: 0 10px 25px rgba(251, 191, 36, 0.8);
+    transform: scale(1.15) translateY(-5px);
+  }
+}
+
+@keyframes checkmarkBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive optimizado para pantalla de 329px x 1000px */
+@media (max-width: 350px) {
+  .loteriaContainer {
+    padding: 5px;
+    height: auto;
+  }
+
+  .header {
+    margin-top: 8px;
+    padding: 8px;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 6px;
+    border-radius: 12px;
+  }
+
+  .controls {
+    margin-bottom: 8px;
+    gap: 10px;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px 3px;
+    padding: 8px 4px;
+  }
+
+  .card {
+    width: 35px;
+    height: 50px;
+    border-radius: 5px;
+  }
+
+  .cardNumber {
+    font-size: 0.45rem;
+    padding: 1px 3px;
+    bottom: 1px;
+    border-radius: 6px;
+  }
+
+  .checkmark {
+    font-size: 0.9rem;
+  }
+
+  .title {
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+  }
+
+  .logo {
+    max-height: 65px;
+    margin-bottom: 0;
+  }
+
+  .expandedCard {
+    margin: 8px;
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .expandedCardTitle {
+    font-size: 1rem;
+  }
+
+  .gameControls {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .startButton,
+  .resetButton {
+    padding: 6px 10px;
+    font-size: 0.6rem;
+    border-radius: 15px;
+    top: 15px;
+    right: 20px;
+  }
+
+  .counter,
+  .timer {
+    font-size: 0.6rem;
+    padding: 3px 6px;
+  }
+
+  .timerBar {
+    width: 50px;
+    height: 3px;
+  }
+
+.containerFooter {
+display: none;
+}
+
+
+
+
+}
+
+/* Para pantallas medianas */
+@media (min-width: 351px) and (max-width: 768px) {
+  .cardGrid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px 10px;
+    padding: 20px 15px;
+  }
+
+  .card {
+    width: 60px;
+    height: 85px;
+    border-radius: 10px;
+  }
+
+  .cardNumber {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+    bottom: 4px;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .logo {
+    max-height: 70px;
+  }
+
+
+
+}
+
+/* Para pantallas grandes */
+@media (min-width: 769px) {
+  .cardGrid {
+    grid-template-columns: repeat(17, 1fr);
+    gap: 30px 25px;
+    padding: 35px 40px;
+  }
+
+  .card {
+    width: 75px;
+    /* antes: 130px */
+    height: 95px;
+    /* antes: 190px */
+    border-radius: 10px;
+  }
+
+
+  .cardNumber {
+    font-size: 1rem;
+    padding: 8px 14px;
+    bottom: 10px;
+  }
+
+  .checkmark {
+    font-size: 2.5rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .logo {
+    max-height: 140px;
+  }
+}
+
+/* Scrollbar personalizada con colores Teletón */
+.cardGrid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cardGrid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.cardGrid::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #FBBF24, #F97316);
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cardGrid::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #F59E0B, #EA580C);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+}
+
+/* Efecto simple de brillo en hover */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.card:hover::before {
+  opacity: 1;
+}
