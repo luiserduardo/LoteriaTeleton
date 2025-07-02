@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import CardGrid from './CardGrid';
 import styles from './Loteria.module.css';
 import { FaPlay, FaRedo } from "react-icons/fa";
@@ -21,6 +21,11 @@ const LoteriaGame = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Para mostrar pausa
+  const closeTimeoutRef = useRef(null);
+  const animatingCardRef = useRef(null);
+  const wasClosedManuallyRef = useRef(false); // Nueva referencia para rastrear si se cerró manualmente
 
   // Guardar cartas seleccionadas
   useEffect(() => {
@@ -84,7 +89,8 @@ const LoteriaGame = () => {
     if (currentSelectedCard) {
       const timeout = setTimeout(() => {
         setCurrentSelectedCard(null);
-      }, 4000); // 6 segundos
+        setIsAnimating(false);
+      }, 6000); // 6 segundos
 
       return () => clearTimeout(timeout);
     }
@@ -92,17 +98,30 @@ const LoteriaGame = () => {
 
   // Seleccionar carta
   const selectCard = (cardId) => {
-    if (isAnimating || selectedCards.includes(cardId)) return;
+    if (isAnimating) return;  // Solo bloqueo mientras animación esté activa
 
     setIsAnimating(true);
     setCurrentSelectedCard(cardId);
+    animatingCardRef.current = cardId;
+    wasClosedManuallyRef.current = false; // Resetear el flag cuando se selecciona una nueva carta
 
-    // Después de 6 segundos, se agrega como jugada
-    setTimeout(() => {
-      setSelectedCards(prev => [...prev, cardId]);
+    clearTimeout(closeTimeoutRef.current);  // Limpio cualquier timeout anterior por seguridad
+
+    closeTimeoutRef.current = setTimeout(() => {
+      if (animatingCardRef.current === cardId && !wasClosedManuallyRef.current) {
+        // Solo agregar a selectedCards si no fue cerrado manualmente
+        setSelectedCards(prev => {
+          // Agregar solo si no está aún para evitar duplicados
+          if (!prev.includes(cardId)) {
+            return [...prev, cardId];
+          }
+          return prev;
+        });
+      }
       setCurrentSelectedCard(null);
       setIsAnimating(false);
-    }, 4000);
+      animatingCardRef.current = null;
+    }, 6000);
   };
 
   const startGame = () => {
@@ -116,6 +135,15 @@ const LoteriaGame = () => {
     setGameStarted(false);
     localStorage.removeItem('loteria-selected-cards');
     localStorage.removeItem('loteria-game-started');
+  };
+
+  // Función para manejar el cierre manual
+  const handleManualClose = () => {
+    clearTimeout(closeTimeoutRef.current);
+    wasClosedManuallyRef.current = true; // Marcar que fue cerrado manualmente
+    animatingCardRef.current = null;
+    setCurrentSelectedCard(null);
+    setIsAnimating(false);
   };
 
   if (loading) {
@@ -186,8 +214,14 @@ const LoteriaGame = () => {
 
         {/* Carta ampliada */}
         {currentSelectedCard && (
-          <div className={styles.expandedCardOverlay}>
-            <div className={styles.expandedCard}>
+          <div
+            className={styles.expandedCardOverlay}
+            onClick={handleManualClose}
+          >
+
+            <div className={styles.expandedCard}
+              onClick={(e) => e.stopPropagation()}
+            >
               <img
                 src={cards.find(card => card.id === currentSelectedCard)?.image}
                 alt={`Carta ${currentSelectedCard}`}

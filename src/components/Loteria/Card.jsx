@@ -21,7 +21,7 @@ const Card = ({
       className += ` ${styles.cardSelected}`;
     }
 
-    if (isDarkened) {
+    if (isDarkened && !isAnimating) {
       className += ` ${styles.cardDarkened}`;
     }
 
@@ -31,7 +31,10 @@ const Card = ({
 
     if (isAnimating && !isCurrentSelected) {
       className += ` ${styles.cardDimmedDuringAnimation}`;
+    } else if (!isAnimating && isDarkened) {
+      className += ` ${styles.cardDarkened}`;
     }
+
 
     if (gameStarted && !isSelected && !isAnimating) {
       className += ` ${styles.cardClickable}`;
