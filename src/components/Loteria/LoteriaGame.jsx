@@ -4,7 +4,6 @@ import styles from './Loteria.module.css';
 import { FaPlay, FaRedo } from "react-icons/fa";
 import FooterBajo from './FooterBajo'
 
-
 const LoteriaGame = () => {
   const [selectedCards, setSelectedCards] = useState(() => {
     const saved = localStorage.getItem('loteria-selected-cards');
@@ -25,7 +24,11 @@ const LoteriaGame = () => {
   // Para mostrar pausa
   const closeTimeoutRef = useRef(null);
   const animatingCardRef = useRef(null);
-  const wasClosedManuallyRef = useRef(false); // Nueva referencia para rastrear si se cerró manualmente
+  const wasClosedManuallyRef = useRef(false);
+
+  // Para manejar doble clic
+  const clickTimeoutRef = useRef(null);
+  const clickCountRef = useRef(0);
 
   // Guardar cartas seleccionadas
   useEffect(() => {
@@ -90,28 +93,56 @@ const LoteriaGame = () => {
       const timeout = setTimeout(() => {
         setCurrentSelectedCard(null);
         setIsAnimating(false);
-      }, 6000); // 6 segundos
+      }, 6000);
 
       return () => clearTimeout(timeout);
     }
   }, [currentSelectedCard]);
 
-  // Seleccionar carta
+  // Función para manejar clic en carta (simple o doble)
+  const handleCardClick = (cardId) => {
+    const isCardBlurred = selectedCards.includes(cardId);
+    
+    if (isCardBlurred) {
+      // Si la carta está borrosa, manejar doble clic
+      clickCountRef.current += 1;
+      
+      if (clickCountRef.current === 1) {
+        // Primer clic - esperar por segundo clic
+        clickTimeoutRef.current = setTimeout(() => {
+          clickCountRef.current = 0; // Reset si no hay segundo clic
+        }, 300); // 300ms para detectar doble clic
+      } else if (clickCountRef.current === 2) {
+        // Doble clic - rehabilitar carta
+        clearTimeout(clickTimeoutRef.current);
+        clickCountRef.current = 0;
+        rehabilitateCard(cardId);
+      }
+    } else {
+      // Si la carta no está borrosa, comportamiento normal
+      selectCard(cardId);
+    }
+  };
+
+  // Función para rehabilitar una carta (quitarla de selectedCards)
+  const rehabilitateCard = (cardId) => {
+    setSelectedCards(prev => prev.filter(id => id !== cardId));
+  };
+
+  // Seleccionar carta (comportamiento original)
   const selectCard = (cardId) => {
-    if (isAnimating) return;  // Solo bloqueo mientras animación esté activa
+    if (isAnimating) return;
 
     setIsAnimating(true);
     setCurrentSelectedCard(cardId);
     animatingCardRef.current = cardId;
-    wasClosedManuallyRef.current = false; // Resetear el flag cuando se selecciona una nueva carta
+    wasClosedManuallyRef.current = false;
 
-    clearTimeout(closeTimeoutRef.current);  // Limpio cualquier timeout anterior por seguridad
+    clearTimeout(closeTimeoutRef.current);
 
     closeTimeoutRef.current = setTimeout(() => {
       if (animatingCardRef.current === cardId && !wasClosedManuallyRef.current) {
-        // Solo agregar a selectedCards si no fue cerrado manualmente
         setSelectedCards(prev => {
-          // Agregar solo si no está aún para evitar duplicados
           if (!prev.includes(cardId)) {
             return [...prev, cardId];
           }
@@ -135,16 +166,28 @@ const LoteriaGame = () => {
     setGameStarted(false);
     localStorage.removeItem('loteria-selected-cards');
     localStorage.removeItem('loteria-game-started');
+    
+    // Limpiar timeouts de doble clic
+    clearTimeout(clickTimeoutRef.current);
+    clickCountRef.current = 0;
   };
 
   // Función para manejar el cierre manual
   const handleManualClose = () => {
     clearTimeout(closeTimeoutRef.current);
-    wasClosedManuallyRef.current = true; // Marcar que fue cerrado manualmente
+    wasClosedManuallyRef.current = true;
     animatingCardRef.current = null;
     setCurrentSelectedCard(null);
     setIsAnimating(false);
   };
+
+  // Limpiar timeouts al desmontar el componente
+  useEffect(() => {
+    return () => {
+      clearTimeout(closeTimeoutRef.current);
+      clearTimeout(clickTimeoutRef.current);
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -163,12 +206,10 @@ const LoteriaGame = () => {
         {/* Header */}
         <div className={styles.header}>
           <img
-            // src="https://res.cloudinary.com/dvsiltcrs/image/upload/v1751239161/logoTeleton_emx96j.png"
             src='https://res.cloudinary.com/dvsiltcrs/image/upload/v1751239555/logo_zfzln1.png'
             alt="Logo Lotería"
             className={styles.logo}
           />
-          {/* <h1 className={styles.title}>LOTERÍA 2025</h1> */}
           {error && (
             <div className={styles.errorMessage}>
               {error}
@@ -188,9 +229,6 @@ const LoteriaGame = () => {
                 <FaRedo />
               </button>
 
-              {/* <div className={styles.counter}>
-              Cartas seleccionadas: {selectedCards.length}/100
-            </div> */}
 
               {isAnimating && (
                 <div className={styles.timer}>
@@ -209,7 +247,7 @@ const LoteriaGame = () => {
           currentSelectedCard={currentSelectedCard}
           isAnimating={isAnimating}
           gameStarted={gameStarted}
-          onCardClick={selectCard}
+          onCardClick={handleCardClick} // Cambié esto para usar la nueva función
         />
 
         {/* Carta ampliada */}
@@ -218,7 +256,6 @@ const LoteriaGame = () => {
             className={styles.expandedCardOverlay}
             onClick={handleManualClose}
           >
-
             <div className={styles.expandedCard}
               onClick={(e) => e.stopPropagation()}
             >
@@ -230,9 +267,6 @@ const LoteriaGame = () => {
                   e.target.src = `./src/assets/cards/card-1.jpg`;
                 }}
               />
-              {/* <h2 className={styles.expandedCardTitle}>
-              {cards.find(card => card.id === currentSelectedCard)?.name}
-            </h2> */}
             </div>
           </div>
         )}
