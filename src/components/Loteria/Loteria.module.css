@@ -342,7 +342,6 @@
   justify-content: center;
   opacity: 0;
   animation: fadeInOverlay 0.5s ease-in-out forwards;
-  backdrop-filter: blur(2px);
 }
 
 .checkmark {
