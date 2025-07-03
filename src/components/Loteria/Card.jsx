@@ -61,7 +61,6 @@ const Card = ({
         {/* <div className={styles.cardNumber}>{card.id}</div> */}
         {isSelected && !isCurrentSelected && (
           <div className={styles.cardOverlay}>
-            <span className={styles.checkmark}>✓</span>
           </div>
         )}
       </div>
