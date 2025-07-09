@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import CardGrid from './CardGrid';
 import styles from './Loteria.module.css';
 import { FaPlay, FaRedo } from "react-icons/fa";
-import FooterBajo from './FooterBajo'
+import FooterBajo from './FooterBajo';
+import imagenesTeleton from './imagenesTeleton.json';
+
 
 const LoteriaGame = () => {
   const [selectedCards, setSelectedCards] = useState(() => {
@@ -42,16 +44,11 @@ const LoteriaGame = () => {
 
   // Cargar imágenes
   useEffect(() => {
-    const fetchImages = async () => {
+    const loadImages = () => {
       try {
         setLoading(true);
-        const response = await fetch('https://teletonapi.glitch.me/imagenesTeleton');
 
-        if (!response.ok) {
-          throw new Error('Error al cargar las imágenes');
-        }
-
-        const images = await response.json();
+        const images = imagenesTeleton;
 
         const generatedCards = Array.from({ length: 100 }, (_, index) => {
           const imageIndex = index % images.length;
@@ -84,8 +81,9 @@ const LoteriaGame = () => {
       }
     };
 
-    fetchImages();
+    loadImages();
   }, []);
+
 
   // Mostrar carta ampliada solo 6 segundos
   useEffect(() => {
@@ -102,11 +100,11 @@ const LoteriaGame = () => {
   // Función para manejar clic en carta (simple o doble)
   const handleCardClick = (cardId) => {
     const isCardBlurred = selectedCards.includes(cardId);
-    
+
     if (isCardBlurred) {
       // Si la carta está borrosa, manejar doble clic
       clickCountRef.current += 1;
-      
+
       if (clickCountRef.current === 1) {
         // Primer clic - esperar por segundo clic
         clickTimeoutRef.current = setTimeout(() => {
@@ -166,7 +164,7 @@ const LoteriaGame = () => {
     setGameStarted(false);
     localStorage.removeItem('loteria-selected-cards');
     localStorage.removeItem('loteria-game-started');
-    
+
     // Limpiar timeouts de doble clic
     clearTimeout(clickTimeoutRef.current);
     clickCountRef.current = 0;
@@ -205,11 +203,17 @@ const LoteriaGame = () => {
       <div className={styles.loteriaContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <img
+          <div>  <img
             src='https://res.cloudinary.com/dvsiltcrs/image/upload/v1751239555/logo_zfzln1.png'
             alt="Logo Lotería"
             className={styles.logo}
           />
+            <img
+              src='https://res.cloudinary.com/dvsiltcrs/image/upload/v1752046458/logoTeleton_emx96j.png'
+              alt="Logo Lotería 2"
+              className={styles.logo}
+            />
+          </div>
           {error && (
             <div className={styles.errorMessage}>
               {error}
